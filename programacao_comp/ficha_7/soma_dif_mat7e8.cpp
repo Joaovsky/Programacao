@@ -40,3 +40,4 @@ int main()
    }
    return 0;
 }
+// admite que o usuario cria matrizes do mesmo tipo. De qq modo era apenas uma questao de colocar um if (lprimeira == lsegunda && cprimeirta ==csegunda){<...>} else {printf("Matrizes tem q ser do mm tipo")}
