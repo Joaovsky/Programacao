@@ -21,6 +21,8 @@ void escreveMatriz(int m[][N])
 			}
 			printf("\n");
 }
+	printf("\n%d\n", &m[0][0]);
+	printf("\n%d\n", &m);
 }
 
 main()

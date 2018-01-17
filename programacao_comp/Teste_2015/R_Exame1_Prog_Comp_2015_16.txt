@@ -1,0 +1,308 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+
+void f1(int a, int b)
+{
+  if( a>=8 || a<b && a<8) printf("1");
+  else if(!(b>6)||a<3) printf("2");
+  if (a>=b)printf("3"); else printf("4"); 
+}
+
+void f2(int op)
+{
+  switch(op) {
+     case 1: printf("1"); break;
+     case 2: 
+     case 3: printf("2"); break;
+     case 4: case 5: printf("3"); 
+     default: printf("4"); return;
+  }
+}
+
+int f3(double x) {  
+  for(int i=0; i<3; i++)
+     printf( "%.*f ", i, x); 
+}
+
+void f4(int x, int tip) {
+	do {
+		if (tip!=0) printf("%d ",x++); 
+		else if (x%2==0) printf("%d",x); 
+		++x;
+	} while(x<=10);
+}
+
+void f5(int N){
+  for(int i=1; i<N; i+=2) 
+     for(int j=i+1; j<N; j++) 
+        printf("%d-%d ",i, j);
+}
+
+void f6(int N) {
+  for(int i=1; i<=N; i++) {
+     for(int j=1; j<=N; j++) 
+        if(i<=N && j>2) printf("O");
+          else printf("#");
+     printf("\n");
+  }   
+}
+void f7(void){   
+  int *ap, x, y, z;
+  x = 10; y=10; ap = &y; 
+  y = 2*x; *ap = 5; z = 2*(*ap); 
+  printf("%d %d %d\n",x,y,z);
+}
+
+void f8(int x, int y, int z) { 
+	x++; y=++x; z+=++x; y=y+--z;
+	printf("%d %d %d\n",x,y,z);
+}
+int compara(void) {
+  char s1[]="B00A"; char s2[]="b00A";
+  char s3[]="X11"; char s4[]="0000";
+  printf("%d %d %d\n", strcmp(s1,s2),
+        strcmp(s1,s3), strcmp(s1,s4));
+}
+
+void xpto(double v[]) {
+    for(int i=0; i<5; i++) 
+		if (i==0) printf("%1.1f ", v[i]);
+		else printf("%1.1f ", (v[i]+v[i-1])/2);        
+}
+
+void num() {
+  for(int i='a'; i<='e'; i++) 
+      printf("%d ",i);
+}
+
+/*
+17) Construa uma fun??o int lanca_dados(int n) que imprima no ?cran o sorteio de n 
+lan?amentos de 2 dados e retorne a soma total do valor obtido nos dados. 
+Exemplos de execu??es: 
+lanca_dados(3)  Imprime: 1-3 5-5 6-6    Retorno: 26
+lanca_dados(6)  Imprime: 1-1 3-2 4-1 5-5 2-2 4-6    Retorno: 36
+*/
+int lanca_dados(int n) 
+{
+	srand(time(NULL));
+	int x,y,soma=0;    //% 0.5
+	for(int i=0; i<n; i++){  //% 1
+		x=rand()%6+1; y=rand()%6+1; //%1 
+		printf("%d-%d ",x, y);   //%1
+		soma+=x+y;  //% 1
+	}
+	return soma; //%0.5
+}
+
+/*
+18) Construa a fun??o void num9(int topo, int pe) que dada a dimens?o do topo e p? de 
+um n?mero nove topo e pe desenhe n?meros 9 compostos por caracteres '#' com aspeto 
+semelhante aos exemplos apresentados abaixo:
+num9(1,1) num9(2,1) num9(3,4) num9(5,2)
+#		##		###		#####
+#		##		# #		#   #
+	 	#		###		#   #
+				  #		#   #
+				  #		#####
+				  #		    #
+			 	  #		    #
+Suponha que disp?e da seguinte fun??o j? implementada: 
+*/
+void nc(int n, char c) { 
+    for(int i=0; i<n; i++) printf("%c", c); }
+
+//versao 1
+void num9(int topo, int pe)
+{
+	for(int i=0; i<topo; i++) {   //%1
+		for(int j=0; j<topo; j++)   //%1
+			if (i!=0 && j!=0 && i!=topo-1 && j!=topo-1) printf(" "); //%1
+			else printf("#");
+		printf("\n");		
+	}
+	
+	for(int i=0; i<pe; i++) {  //%1
+		nc(topo-1,' ');    //%0.5
+		printf("#\n");     //%0.5
+	}
+}
+//versao 2
+void num9b(int topo, int pe)
+{
+	nc(topo,'#'); printf("\n");  //%0.5
+	for(int i=0; i<topo-2; i++) {  //%1
+		printf("#"); nc(topo-2,' ');printf("#\n"); //%1
+	}
+	//if(topo>1){
+	nc(topo,'#'); printf("\n"); //%0.5
+	
+	for(int i=0; i<pe; i++) {  //%1
+		nc(topo-1,' ');    //%0.5
+		printf("#\n");     //%0.5
+	}
+}
+
+/*
+19) Construa a fun??o void cria_vetor(int vec[], int dim, int x1, int x2) que crie 
+um vetor de n?meros inteiros vec, com dim elementos. A primeira metade do vetor deve 
+ter m?ltiplos de x1 e a segunda metade, m?ltiplos de x2. Caso o vetor tenha dimens?o 
+?mpar, a primeira metade deve ser maior. Exemplos:
+cria_vetor(v, 10, 2, 3) 
+Resultado: v[10] = {2,4,6,8,10, 3,6,9,12,15}
+cria_vetor(v, 7, 5, 8)
+Resultado: v[7] = {5,10,15,20, 8,16,24}
+*/
+
+void cria_vetor(int vec[], int dim, int x1, int x2) 
+{
+	int val1=x1, val2=x2;     //%1
+	for(int i=0; i<dim; i++)  //%1
+		if (i<dim/2.0) {      //%1
+			vec[i]= val1; val1+=x1;  //%1
+		}
+		else {
+			vec[i]= val2; val2+=x2;  //%1
+		}
+}
+
+/*
+20) Construa uma fun??o em linguagem C/C++ int sub_numeros(char frase[80]) que pe?a ao 
+utilizador uma cadeia de caracteres com at? 80 caracteres (utilizando o comando gets) e 
+retorne em frase[80] essa cadeia mas substituindo todas as ocorr?ncias de "xpto" por "*". 
+A fun??o deve retornar o n?mero de caracteres final da frase resultado. 
+Por exemplo, se o utilizador introduzir: "abxptoxptox1+xxxxpto2" frase[] ficaria com o 
+conte?do: "ab**x1+xxx*2" e a fun??o retornaria 12.
+*/
+int sub_numeros(char frase[80])
+{
+	gets(frase);  //%1
+  	char *p;
+	while(p = strstr(frase, "xpto")) {  //%1 verifica se ainda existe "xpto" em frase
+  		*p='*'; p++;                    //%1 substitui 'x' por '*'
+  		strncpy(p, p+3, strlen(p)-2);   //%1 puxa string 3 chars para tras
+	}
+	return strlen(frase); //%1 retorna tamanho da frase
+}
+
+/*
+21) Suponha uma matriz, inicializada mat[N][N] contendo n?meros inteiros representando o 
+estado de um jogo com pe?as de quatro jogadores (1-4), espa?os vazios (0) e armadilhas 
+onde n?o se pode jogar (8) num tabuleiro com dimens?o NxN. Construa a fun??o 
+int joga(int mat[N][N], int x, int y, int jog) que dada a matriz com o estado do jogo 
+coloque uma pe?a do jogador jog na posi??o (x,y) e capture todas as pe?as vizinhas 
+existentes para a direita, esquerda, cima e baixo da pe?a jogada que n?o tenham 
+armadilhas pr?ximas (direita, esquerda, cima e baixo). As pe?as com armadilhas pr?ximas 
+devem desaparecer. A fun??o deve retornar o n?mero de pe?as do jogador jog ap?s a jogada 
+ou -1 caso a jogada seja imposs?vel (i.e. se o utilizador tentar jogar numa casa n?o 
+vazia). Exemplos: 
+Matriz Inic1:		joga(mat,1,1,1)	   joga(mat,1,3,4)	joga(mat,5,2,3)
+1  1  0  2  4   	 1  1  0  2  4	   1  1  0  2  4    1  1  0  2  3
+1  4  0  1  0   	 1  4  0  1  0	   4  4  0  1  0    4  4  0  3  3
+0  8  0  2  0     	 0  8  0  2  0	   4  8  0  2  0    4  8  0  2  0
+1  8  2  8  3  	  	 1  8  2  8  3	   0  8  2  8  3    0  8  2  8  3
+0  3  3  2  4	 	 0  3  3  2  4	   0  3  3  2  4    0  3  3  2  4
+Valor de Retorno:	-1	                5		         6
+*/
+
+#define N 5
+void muda(int mat[N][N], int x, int y, int jog)
+{
+	if (y>0 && mat[y-1][x]==8 || y<N-1 && mat[y+1][x]==8 ||  
+	    x>0 && mat[y][x-1]==8 || x<N-1 && mat[y][x+1]==8)
+	    mat[y][x]=0; 
+	else mat[y][x]=jog;    //%1.5 mudar e ver armadilhas
+}
+
+int joga(int mat[N][N], int x, int y, int jog) 
+{
+	x--;y--;
+	if (mat[y][x]!=0) return -1;  //%0.5
+	mat[y][x]=jog;   //%0.5
+	if (x>0 && mat[y][x-1]>=1 && mat[y][x-1]<=4 && mat[y][x-1]!=jog)  //%1.5 condicoes
+		muda(mat,x-1,y,jog);  
+	if (x<N-1 && mat[y][x+1]>=1 && mat[y][x+1]<=4 && mat[y][x+1]!=jog)
+		muda(mat,x+1,y,jog);
+	if (y>0 && mat[y-1][x]>=1 && mat[y-1][x]<=4 && mat[y-1][x]!=jog)
+		muda(mat,x,y-1,jog);
+	if (y<N-1 && mat[y+1][x]>=1 && mat[y+1][x]<=4 && mat[y+1][x]!=jog)
+		muda(mat,x,y+1,jog);
+	int pec=0;
+	for(int i=0; i<N; i++)		//%1.5 contar e retornar pecas
+		for(int j=0; j<N; j++)
+			if(mat[i][j]==jog) pec++;
+	return pec;
+}
+
+void resp_mult()
+{
+	printf("\nEx1:  ");	f1(7,8); 
+	printf("\nEx2:  ");	f1(6,4); 
+	printf("\nEx3:  ");	f2(1); 	
+	printf("\nEx4:  ");	f2(4);  
+	printf("\nEx5:  ");	f3(10.236); 
+	printf("\nEx6:  ");	f4(5,0); 
+	printf("\nEx7:  ");	f4(1,1); 
+	printf("\nEx8:  ");	f5(5); 
+	printf("\nEx9:  ");	f5(6); 
+	printf("\nEx10:\n"); f6(2); 
+	printf("\nEx11:\n"); f6(4); 
+	printf("\nEx12: ");	f7(); 
+	printf("\nEx13: "); f8(1,1,1); 
+	printf("\nEx14: "); compara(); 
+	printf("\nEx15: ");
+	double v[5]={1,2,3,9,1}; xpto(v); 
+	printf("\nEx16: "); num(); 
+	printf("\n");
+}
+
+/*
+22) Construa um programa principal que lhe permita testar devidamente todos os 
+exerc?cios anteriores (17-21).
+*/
+
+//fun??o auxiliar
+int mostra(int mat[N][N])
+{
+	for (int i=0; i<N; i++) {
+		for (int j=0; j<N; j++)	   
+			printf("%d ", mat[i][j]); 
+		printf("\n");
+	}	
+}
+
+int main()
+{
+	//resp_mult();
+	int s=lanca_dados(3);    //%0.5
+	printf("Soma: %d\n",s);  //%0.5
+	s=lanca_dados(6); 
+	printf("Soma: %d\n",s);
+	
+	num9(1,1); printf("\n");  //%1 (colocar exemplos ou fazer scanf e num9 com o valor
+	num9(2,1); printf("\n");
+	num9(3,4); printf("\n");
+	num9(5,2); printf("\n");
+	
+	int v[10];
+	cria_vetor(v,10,2,3);  //%0.5
+	for(int i=0; i<10; i++) printf("%d ",v[i]);  //%0.5
+	printf("\n");
+	cria_vetor(v,7,5,8);
+	for(int i=0; i<7; i++) printf("%d ",v[i]);
+	printf("\n");
+	
+	char st[80];
+	int dim=sub_numeros(st);  //%0.5
+	printf("%s Dim=%d\n", st, dim);  //%0.5
+	
+	int m[N][N]= {1,1,0,2,4, 1,4,0,1,0, 0,8,0,2,0, 1,8,2,8,3, 0,3,3,2,4};  //%0.5
+	mostra(m); printf("\n");
+	printf("Joga: %d\n",joga(m,1,1,1));   //%0.5
+	mostra(m); printf("\n"); 	          //%0.5 funcao mostra auxiliar
+	printf("Joga: %d\n",joga(m,1,3,4)); 
+	mostra(m); printf("\n");
+	printf("Joga: %d\n",joga(m,5,2,3)); 
+	mostra(m); printf("\n");
+}
