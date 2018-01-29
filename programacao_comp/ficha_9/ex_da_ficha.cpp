@@ -130,19 +130,19 @@ main()
 	printf("Nome: %s\n", nome);
 	printf("Idade: %d\n", idade);
 	printf("-------------\n");
-//	
-//	printf("Conversao para maiusculas:\n");
-//	nome_maiusculas(nome, nome_res);
-//	puts(nome_res);
-//	printf("-------------\n");
-//	
-//	printf("Nome sem carater, que carater eliminar?\n");
-//	eliminar= getchar();
-//	nome_elimina_char(nome, eliminar, nome_res);	
-//	puts(nome_res);
-//	printf("-------------\n");
+	
+	printf("Conversao para maiusculas:\n");
+	nome_maiusculas(nome, nome_res);
+	puts(nome_res);
+	printf("-------------\n");
+	
+	printf("Nome sem carater, que carater eliminar?\n");
+	eliminar= getchar();
+	nome_elimina_char(nome, eliminar, nome_res);	
+	puts(nome_res);
+	printf("-------------\n");
 	converte(nome, nome_res);
-//	printf("-------------\n");
+	printf("-------------\n");
 	puts(nome);
 	puts(nome_res);
 }
