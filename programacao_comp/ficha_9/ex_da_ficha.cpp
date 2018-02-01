@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <ctype.h>
 #define MAX 50
+#define boolean int
+#define true 1
+#define false 0
 
 
 void entra_string(char *str)
@@ -114,6 +117,34 @@ void converte(const char *nom_normal, char *nome_comp)
 	strcat(nome_comp, nova2);	
 }
 
+boolean existe_nome(const char *nome, char *nome_proc, int *pos, int *num_car){
+			    	
+		char *ptr=0;
+			
+		if(strlen(nome)>0)
+		{
+			ptr=strstr(nome, nome_proc);
+			num_car=strlen(nome_proc);
+			
+			if(ptr!=NULL)
+			{
+				pos = (int) (ptr - nome);
+				printf("\nNome encontrado! ");
+				printf("\nPosicao: %d\n", pos);
+				printf("Numero carateres: %d\n", num_car);
+				return 1;
+			}
+			else
+			{	
+				return 0;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+}
+
 main()
 {
 	char dados[MAX], nome[MAX], nome_res[MAX]; //string q armazena o q o usuario indicara
@@ -145,6 +176,10 @@ main()
 	printf("-------------\n");
 	puts(nome);
 	puts(nome_res);
+	printf("-------------\n");
+	existe_nome(str, "Pedro", posicao, num_caratere);
+	
+	return 0;
 }
 
 
