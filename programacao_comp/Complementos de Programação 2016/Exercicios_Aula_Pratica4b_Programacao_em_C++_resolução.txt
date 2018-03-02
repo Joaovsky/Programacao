@@ -1,0 +1,73 @@
+/*
+Exercicio 4b
+Um programa de gest?o de um clube desportivo guarda informa??o sobre o seu 
+pessoal, que inclui atletas, professores e s?cios. Sabendo que:
+  - Todo o pessoal do clube desportivo ? identificado por um c?digo ?nico 
+    e sequencial e possui um nome e uma data de admiss?o no clube.
+  - Existem diversas turmas, cada qual identificada por uma letra. 
+    Cada turma tem uma ?nica modalidade. A turma deve especificar o seu 
+    hor?rio semanal composto por v?rias aulas (n?mero de aulas 
+    indefinido). Sugest?o: use um vetor de aulas.
+  - Cada aula tem um dia da semana, uma hora de in?cio e uma dura??o.
+  - Existem diversas modalidades, cada qual com um n?mero e uma 
+    designa??o.
+  - Os atletas est?o inscritos numa ?nica modalidade e numa determinada 
+    turma. 
+  - Os professores lecionam uma determinada modalidade a v?rias turmas e 
+    t?m um sal?rio. Lecionam todas as aulas da respetiva turma.
+  - Os s?cios pagam uma determinada quota mensal e podem ser de tr?s 
+    tipos: normal, privilegiado e vip. 
+Implemente a hierarquia de classes que na sua opini?o melhor descreve o 
+cen?rio acima, especificando os dados e m?todos de cada classe. Justifique 
+a sua escolha. Nota: N?o ? necess?rio implementar qualquer m?todo, 
+simplesmente definir os ficheiros *.h das classes respectivas.
+*/
+//Nota: Topicos de resolu??o. Exercicio n?o est? completo:
+
+class CDate {
+   int dia, mes, ano;    
+};
+
+class CPessoal {
+   protected:
+       int codigo;
+       string nome;
+       CDate data_adm;
+   public:
+       CPessoal(int, string, CDate);
+};
+
+class CModalidade {
+   protected:  
+       int numero;
+       string designacao;
+};
+      
+class CAula {
+      int dia, hora, duracao;
+};
+
+class CTurma {
+   protected:  
+       char idturma;
+       CModalidade mod;
+       vector <CAula> aulas;
+};      
+
+class CProfessor: public CPessoal {
+   protected:  
+        CModalidade mod;
+        double salario;      
+};
+
+class CAtletas: public CPessoal {
+   protected:  
+        //CModalidade mod;
+        CTurma turma;      
+};
+
+class CSocios: public CPessoal {
+   protected:  
+        double quota;
+        string tipo;      
+};

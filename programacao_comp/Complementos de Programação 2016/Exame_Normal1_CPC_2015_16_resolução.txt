@@ -1,0 +1,290 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+/*
+GRUPO II (11.0 Valores)
+Considere uma aplica??o para gest?o dos correios (CTT). Uma central de correio (classe CCentral) gere 
+a correspond?ncia de v?rias ag?ncias (classe CAgencia). Uma ag?ncia de correios tem um nome e uma lista 
+com toda a correspond?ncia recebida ? espera de ser expedida. A correspond?ncia (classe CCorrespondencia) 
+pode ser de dois tipos: correio normal (classe CCorreioNormal); ou EMS (Express Mail Sevice - classe CEMS). 
+A correspond?ncia CorreioNormal tem um pre?o que ? defindo na altura da cria??o de um objecto e ? guardado 
+no membro-dado preco. A correspond?ncia do tipo EMS tem um pre?o que ? 5 vezes o seu peso. As classes 
+CCentral, CAgencia, CCorrespondencia, CCorreioNormal e CEMS est?o parcialmente definidas a seguir. 
+Nota: as classes apresentadas abaixo est?o incompletas. Pode adicionar os m?todos auxiliares que considerar 
+necess?rios para a resolu??o do problema. Suponha que foram inclu?dos todos os #include necess?rios e 
+using namespace std;.
+*/
+ 
+class CCorrespondencia {
+  protected:
+	string destino;
+	int prioridade;
+  public:
+	CCorrespondencia(){ destino=""; prioridade=0;}
+	CCorrespondencia(string de, int pri);
+	string getDestino() {return destino; }     //funcoes auxiliares
+	int getPrioridade() {return prioridade; }  //funcoes auxiliares
+	virtual int getPreco()=0;
+// ?
+};
+class CCorreioNormal: public CCorrespondencia {
+	int preco;
+  public:
+	CCorreioNormal(){ preco=0;}
+	CCorreioNormal(int pr, string de, int pri);
+	int getPreco();
+// ?
+};
+class CEMS: public CCorrespondencia {
+	int peso;
+  public:
+	CEMS() { peso=0;}
+	CEMS(int pe, string de, int pri);
+	int getPreco();
+// ?
+};
+class CAgencia {
+	string nome;
+	vector<CCorrespondencia*> cartas;
+  public:
+	CAgencia(string no) { nome=no; };
+	string getNome()  {return nome; }   //funcao auxiliar para teste;
+	int adicionaCarta(CCorrespondencia *c);
+	bool estaOrdenado() const;
+	vector <CCorrespondencia*> recolhaCorr(string destino);
+	CAgencia operator+(CAgencia ag2);
+	int retornaValor();
+	void mostraCartas() {   //Funcao auxiliar para teste
+		for(int i=0; i<cartas.size(); i++)
+			cout << cartas[i]->getDestino() << " Pr:" << cartas[i]->getPrioridade() << 
+			        " -> $" << cartas[i]->getPreco() << endl;
+		cout << endl;
+		
+	}
+// ?
+};
+class CCentral {
+	int ID;
+  public:
+	vector<CAgencia> agencias;   //publico para testes sem necessidade de funcoes auxiliares
+	CCentral(int ident) {ID=ident; };
+	void ordenaAgencias();
+// ?
+};
+
+/* 2.1) Implemente novos construtores para as classes CCorrespondencia, CCorreioNormal e CEMS 
+que inicializem as suas vari?veis com par?metros passados no construtor:
+CCorrespondencia(string de, int pri);
+CCorreioNormal(int pr, string de, int pri)
+CEMS(int pe, string de, int pri); */
+CCorrespondencia::CCorrespondencia(string de, int pri) {destino=de; prioridade=pri; }     //%2
+CEMS::CEMS(int pe, string de, int pri): CCorrespondencia(de,pri) { peso=pe; }            //%1.5
+CCorreioNormal::CCorreioNormal(int pr, string de, int pri): CCorrespondencia(de,pri){ preco=pr;}  //%1.5
+
+/* 2.2) Implemente as fun??es int getPreco() das classes CCorreioNormal e CEMS. */
+int CCorreioNormal::getPreco(){ return preco; }  //%2
+int CEMS::getPreco() { return peso*5;}           //%3
+
+/*2.3) Implemente o membro fun??o da classe CAgencia que adiciona uma carta ? ag?ncia, 
+retornando o n?mero total de cartas: int CAgencia::adicionaCarta(CCorrespondencia *c); */
+int CAgencia::adicionaCarta(CCorrespondencia *c)
+{
+	cartas.push_back(c);     //%3
+	return cartas.size();    //%2
+}
+
+/* 2.4) Implemente uma fun??o booleana para a classe CAgencia que verifica se, numa 
+lista de correspond?ncias, estas est?o ordenadas por ordem crescente de pre?o: 
+bool CAgencia::estaOrdenado() const. */
+bool CAgencia::estaOrdenado() const
+{
+	for(int i=0; i<cartas.size()-1; i++)   //%2
+		if (cartas[i]->getPreco()>cartas[i+1]->getPreco()) return false;  //%2
+	return true;  //%1
+}
+
+/* 2.5) A central de correios recolhe das ag?ncias a correspond?ncia para ser expedida. 
+O processamento ? feito por regi?es. Implemente na classe CAgencia um membro-fun??o que 
+recebe o nome de um destino e devolve um vector com toda a correspond?ncia para esse 
+destino:  vector <CCorrespondencia*> recolhaCorr(string destino); Esta fun??o deve tamb?m 
+remover do vetor cartas da ag?ncia a correspond?ncia que satisfaz as condi??es pedidas. */
+vector <CCorrespondencia*> CAgencia::recolhaCorr(string destino)
+{
+	vector <CCorrespondencia*> vc;   //%0.5  (1 criar e retornar)
+	for(int i=cartas.size()-1; i>=0; i--)    //%1   
+		if (cartas[i]->getDestino() == destino){   //%1
+			vc.push_back(cartas[i]);               //%1 
+			cartas.erase (cartas.begin()+i);       //%1
+		}		 
+	return vc;    //%0.5
+}
+
+/* 2.6) Na classe CAgencia, implemente um membro-fun??o int CAgencia::retornaValor() que 
+retorne o valor total em correspond?ncia que a ag?ncia tem para expedir.  */
+int CAgencia::retornaValor() 
+{
+	int soma=0;   //%0.5
+	for(int i=0; i<cartas.size(); i++)   //%2
+		soma += cartas[i]->getPreco();  //%1.5
+	return soma;  //%1
+}
+
+/* 2.7) Na classe CCentral, implemente um membro-fun??o void CCentral::ordenaAgencias() que
+ordene o vetor de ag?ncias da central por ordem decrescente do valor da sua correspond?ncia. 
+Nota: Mesmo que n?o a tenha implementado, utilize a fun??o da al?nea anterior. */
+void CCentral::ordenaAgencias()
+{
+	for (int i=0; i<agencias.size()-1; i++)   //%1
+		for (int j=i+1; j<agencias.size(); j++)  //%1 (2 para os ciclos de ordenacao)
+			if (agencias[i].retornaValor()<agencias[j].retornaValor()) {   //%1.5 comparacao 
+				CAgencia aux=agencias[i];    //%1.5 troca
+				agencias[i]=agencias[j];
+				agencias[j]=aux;
+			}
+}
+
+/* 2.8 Implemente um operador + na classe CAgencia que permita juntar duas ag?ncias. O nome da 
+ag?ncia resultado dever? ser a concatena??o dos dois nomes e a correspond?ncia da ag?ncia 
+resultado dever? ser o conjunto de correspond?ncia de ambas as ag?ncias. */
+CAgencia CAgencia::operator+(CAgencia ag2)
+{
+	nome += ag2.nome;   //%1
+	for(int i=0; i<ag2.cartas.size(); i++)  //%2
+		cartas.push_back(ag2.cartas[i]);	//%2  (n?o descontar muito utilizacao de arrays convencionais em vez de vector)
+	return *this;   //%1
+}
+
+/*
+2.9) Implemente uma fun??o main() (programa principal) que lhe permita testar as al?neas anteriores.
+*/
+int main()
+{
+	CEMS ce1(2,"porto", 2), ce2(2,"lisboa", 3), ce3(1,"braga", 1), ce4(1,"porto", 3);  //%1 criar registos
+	CCorreioNormal cn1(3,"porto", 1), cn2(5,"lisboa", 3), cn3(20,"porto", 2), cn4(100,"braga", 2);
+	CAgencia ag1("Ag1 Gumaraes"), ag2("Ag2 Porto"), ag3("Ag3 Viana");
+	CCentral cent(1);
+	cent.agencias.push_back(ag1); cent.agencias.push_back(ag2); cent.agencias.push_back(ag3);
+	
+	ag1.adicionaCarta(&ce1); ag1.adicionaCarta(&ce2); ag1.adicionaCarta(&ce3);     //%0.5 adicionar registos
+	ag1.adicionaCarta(&cn1); ag1.adicionaCarta(&cn2);
+	ag2.adicionaCarta(&ce4); ag2.adicionaCarta(&cn3);
+	ag3.adicionaCarta(&cn4);
+	
+	cout << "Ag1: " << endl; ag1.mostraCartas();   //%0.5 fazer algo para visualizar conteudo de agencias
+	cout << "Ag2: " << endl; ag2.mostraCartas();
+	cout << "Ag3: " << endl; ag3.mostraCartas();
+	
+	cout << endl << "Ord1:" << ag1.estaOrdenado() << " Ord2:" << ag2.estaOrdenado() << endl << endl;  //%0.5 testar ordenado
+	
+	vector <CCorrespondencia*> vdes;
+	vdes = ag1.recolhaCorr("porto");   //%0.5 testar recolha
+	cout << "Despachados: " << endl;
+	for (int i=0; i<vdes.size(); i++)  //%0.5 experimentar resultado de recolha
+		cout << vdes[i]->getDestino() << " Pr:" << vdes[i]->getPrioridade() << " -> $" << vdes[i]->getPreco() << endl;
+	cout << "Ag1 depois do despacho: " << endl; ag1.mostraCartas(); 
+	
+	cout << "Valor Ag1: " << ag1.retornaValor() << endl;   //%0.5 testar retorna valor
+	cout << "Valor Ag2: " << ag2.retornaValor() << endl;
+	
+	cent.ordenaAgencias();    //%0.5 testar ordenar agencias
+	for (int i=0; i<cent.agencias.size(); i++)
+		cent.agencias[i].mostraCartas();  //%0.5 experimentar resultado de ordenar agencias
+	
+	ag1 = ag1+ag2;                           //%0.5 testar soma de agencias
+	cout << "Ag1: " << ag1.getNome() << endl; ag1.mostraCartas();    //%0.5 experimentar resultado de soma de agencias
+	
+	system("pause"); return 0;	
+}
+
+/*
+GRUPO III (4.0 Valores)
+Pretende-se guardar informa??o sobre uma cadeia de supermercados de venda de bebidas:
+- Existem um conjunto de lojas/supermercados de venda de bebidas, cada qual situado numa dada 
+  cidade, com uma dada dimens?o (em m2) e com um determinado gerente (empregado da loja).
+- Cada loja tem tamb?m um conjunto de empregados dos quais interessa saber o nome, n? CC, 
+  sal?rio e data de contrata??o. 
+- A cadeia de supermercados deseja ainda ter informa??o das dist?ncias entre cada par de lojas.
+- As lojas t?m ainda um conjunto de produtos de diversos tipos, interessando saber para cada 
+  produto o seu c?digo e nome.
+- Os produtos podem ser de tr?s tipos: pipos de l?quidos, dos quais interessa saber o conte?do 
+  actual e a capacidade m?xima (ambos em litros); garrafas (das quais interessa saber o n?mero 
+  em stock e a capacidade - em litros); acess?rios (dos quais interessa saber a fun??o e o prazo 
+  de garantia - em meses). 
+- Para todos os produtos interessa saber o pre?o por unidade. 
+- Vendas. Cada venda precisa de registar o n?mero de contribuinte do cliente, produtos e 
+  respectivas quantidades que adquiriu, empregado que o atendeu e pre?o total da venda.
+Defina um conjunto de classes que na sua opini?o melhor descreve o cen?rio acima, especificando 
+os dados, construtores e destrutures (se necess?rio) de cada classe. Implemente ainda m?todos 
+get e set, exemplificativos, para uma ?nica classe ? sua escolha Justifique as suas escolhas. 
+Nota: N?o ? necess?rio implementar qualquer m?todo, simplesmente definir os ficheiros *.h das 
+classes respetivas.
+*/
+
+class CData
+{
+	//...
+};
+class CEmpregado   //%1
+{
+	//int cod;
+	string nome;
+	int cartcid;
+	CData contrat;
+	CEmpregado(string n, int cc, CData cont) {//...
+	}
+};
+
+class CProduto  //%1.5 (produto e derivadas)
+{
+  protected:	
+	int codigo;
+	string nome;
+	double preco_unid;
+};
+
+class CPipo: public CProduto
+{
+	double conteudo;
+	double cap_max;
+};
+
+class CGarrafa: public CProduto
+{
+	int num_stock;
+	double cap_litros;
+};
+
+class CAcessorio: public CProduto
+{
+	string funcao;
+	int prazo;
+};
+
+class CLoja  //%1
+{
+	string cidade;
+	double dimensao;
+	int gerente_id;  //ou CEmpregado
+	vector <CEmpregado> empregados; //ou so' id empregados	
+	vector <CProduto> produtos; //ou so' id produtos
+	vector <double> dist;   //ou outro metodo simples
+};
+
+class CVenda{  //%1
+	int numcont;
+	vector <CProduto> produtos;  //ou cod produto 
+	vector <int> qtd;  
+	double preco_total;
+	CEmpregado empregado; //ou cod empreg
+};
+
+class CEmpresa
+{
+	vector <CLoja> lojas;
+};
+
+//Metodos de get e set para uma classe 0.5
+//Construtores para algumas classes 0.5
+//Justifica??es 0.5

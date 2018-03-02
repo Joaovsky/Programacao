@@ -14,8 +14,8 @@ void normaliza_matriz(float mat[][50], int m, int n)
 			{
 				norma_sqr+=pow(mat[i][j], 2);
 			}
-			norma=sqrt(norma_sqr);
-			v[i]=norma;
+		norma=sqrt(norma_sqr);
+		v[i]=norma;
 	}
 	//matriz normalizada
 	printf("Matriz normalizada\n");
@@ -32,7 +32,7 @@ void normaliza_matriz(float mat[][50], int m, int n)
 main()
 {
 	float mat[50][50];
-	int i, j, num=0, l, c;
+	int i, j, l, c;
 	printf("Indique o numero linhas\n");
 	scanf("%d", &l);
 	printf("\nIndique o numero colunas\n");
@@ -45,7 +45,6 @@ main()
 				{
 					scanf("%f", &mat[i][j]);
 				}
-				printf("\n");
 		}
 	
 	printf("Matriz original\n");
@@ -59,4 +58,5 @@ main()
 				printf("\n");
 		}	
 	normaliza_matriz(mat, l, c);
+	return 0;
 }

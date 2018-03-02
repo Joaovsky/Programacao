@@ -56,7 +56,7 @@ void grava_numeros(void)
 	else
 	{
 	printf("introduza numeros. Quando introduzir -1 o programa chega ao fim\n");
-	for(x=0;x!=-1;)
+	for(;x!=-1;)
 	{
 		scanf("%d", &x);
 		fprintf(f2, "%d\n", x);
@@ -109,7 +109,7 @@ void conta_string(char *fich, char *str)
 		while (!feof(f1))
 			{
 				ret= strstr(fgets(linha, 50, f1), str);
-				if(ret!=NULL)
+				if(!ret)
 					{
 						cont++;
 					}

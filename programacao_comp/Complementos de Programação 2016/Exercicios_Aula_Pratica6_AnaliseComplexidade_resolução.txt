@@ -1,0 +1,123 @@
+// Programa Exemplo de Contagem de Opera??es e de Tempo Subsequ?ncia M?xima
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <vector>
+
+using namespace std;
+
+long int op;  //Global Counter for operations
+
+// Time (in seconds) between clock1 and clock2
+double diffclock(clock_t clock1,clock_t clock2)
+{
+	return (double)(clock1-clock2)/CLOCKS_PER_SEC;
+}
+
+// Creates a random vector with n elements between 0 and 1000000
+void cria_vetor(int v[], int n)
+{
+    for(long int i=0; i<n; i++)
+        v[i] = rand() % 100 - 50;    
+}
+
+// Writes the vector on the screen
+void escreve_vetor(int v[], int n)
+{
+    for(long int i=0; i<n; i++)
+        cout << v[i] << " ";
+    cout << endl;    
+}
+
+// MaxSubSum1: Calcula a Subsequ?ncia m?xima utilizando 
+// tr?s ciclos (O(n^3))
+template <class T> long int maxSubSum1(T vec[], long int n)
+{
+    T maxSum = 0;
+    for (int i = 0; i < n; i++)
+       for (int j = i; j < n; j++)
+       {
+		   	T thisSum = 0;
+           	for (int k = i; k <= j; k++) {
+				thisSum += vec[k];
+				op++;
+            }
+          	if (thisSum > maxSum) maxSum = thisSum;
+       } 
+	 return maxSum;
+}
+
+// MaxSubSum2: Calcula a Subsequ?ncia m?xima utilizando 
+// dois ciclos(O(n^2))
+template <class T> T maxSubSum2(T vec[], long int n)
+{
+    T maxSum = 0;
+    for (int i = 0 ; i < n; i++) 
+	 {
+	 	T thisSum = 0;
+      	for (int j = i; j < n; j++) {
+          thisSum += vec[j];
+          op++;
+          if (thisSum > maxSum) maxSum = thisSum;
+      } 
+	 }
+	 return maxSum;
+}
+
+// MaxSubSum3: Calcula a Subsequ?ncia m?xima utilizando 
+// um ?nico ciclo (O(n))
+template <class T> T maxSubSum3(T vec[], long int n)
+{
+    T thisSum = 0, maxSum = 0;
+    for (long int j=0; j < n; j++) {
+       thisSum += vec[j];
+       op++;
+       if (thisSum > maxSum) maxSum = thisSum;
+       else if (thisSum < 0) thisSum = 0; 
+    }
+    return maxSum;
+}
+
+#define MAX 500000
+
+//Test Times and operations for subsum algorithms
+void testa_subsum(ostream &co)
+{
+    int v[MAX];
+    long int i,j;
+	clock_t begin, end;
+	
+    long int N = 10; 
+	// Experimentar: N = 100   N =1000; N =5000; N=3000; N =50000; N=30000; N=500000;
+	//for(long int N=10; N<500000; N*=10)
+    {	  
+      co << N << " ; ";	   
+	  cria_vetor(v,N);
+	  escreve_vetor(v,N);  //Comentar para vetores grandes
+ 
+      op=0; begin=clock();
+	  long int max = maxSubSum1(v, N);
+	  end=clock();
+	  co << endl << "Max1: " << max << " op: " << op << " t: " << diffclock(end,begin); 
+
+      /*
+      op=0; begin=clock();
+	  long int max = maxSubSum2(v, N);
+	  end=clock();
+	  co << endl << "Max2: " << max << " op: " << op << " t: " << diffclock(end,begin);
+ */
+ /*
+      op=0; begin=clock();
+	  long int max = maxSubSum3(v, N);
+	  end=clock();
+	  co << endl << "Max3: " << max << " op: " << op << " t: " << diffclock(end,begin);
+ */
+  }	     
+}
+
+int main()
+{
+	testa_subsum(cout);
+}

@@ -1,0 +1,260 @@
+/* Topicos de Correc??o do Exame/Mini_Teste 2 de Programa??o */
+//Nota: Algumas resolu??es n?o est?o totalmente completas... 
+
+/*GRUPO II (7 Valores) 
+2) O propriet?rio de uma cadeia de parques de estacionamento deseja manter 
+informa??o sobre os seus clientes e localiza??o das respetivas viaturas. 
+Para isso pretende implementar duas classes em C++ que permitam representar a 
+informa??o sobre o estado de cada parque de estacionamento (CParqueEstac) e o 
+estado de cada cart?o cliente (CInfoCartao). Implemente as classes CParqueEstac 
+e CInfoCartao de acordo com a especifica??o das al?neas seguintes.  
+Suponha que foram inclu?dos todos os #include necess?rios. 
+A declara??o das classes ? a seguinte:
+*/
+
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+
+using namespace std;
+
+class CInfoCartao { // classe auxiliar
+   public:
+     string nome; 
+     bool presente;
+};
+
+class CParqueEstac{
+    int vagas;
+    const int lotacao;
+    vector< CInfoCartao> clientes;
+    int num_clientes;
+    int pos_cliente(const string &nome) const;
+  public:
+   CParqueEstac(int lot, int nmax_clientes);
+   ~CParqueEstac();
+   bool novo_cliente(const string &nome);
+//   bool retira_cliente(const string &nome);
+   bool entrar (const string &nome);
+//   bool sair (const string &nome);
+//   int num_lugares() const;
+   int num_lugares_ocupados() const;
+   bool operator==(const CParqueEstac &pe) const;
+};
+/*
+2.1) Implemente o construtor:
+  CParqueEstac::CParqueEstac(int lot, int nmax_clientes)
+que aceita como par?metros a lota??o do parque e o n?mero m?ximo de clientes 
+com acesso ao parque (p. ex. um parque de 200 lugares pode servir uma 
+clientela de 300 pessoas). Ambos os valores s?o constantes. O construtor deve 
+criar um array para guardar informa??o sobre os clientes (inicialmente o 
+parque n?o tem clientes e est? vazio). Nota: cuidado ao iniciar o membro 
+dado constante lotacao.
+*/
+CParqueEstac::CParqueEstac(int lot, int nmax_clientes): lotacao(lot)
+{
+    num_clientes = nmax_clientes;
+    vagas = lot;
+}
+
+
+/*
+2.2) Implemente o membro-fun??o que retorna o n?mero de viaturas presentes 
+no parque: int CParqueEstac::num_lugares_ocupados() const
+*/
+int CParqueEstac::num_lugares_ocupados() const
+{
+    return lotacao - vagas;
+}
+
+/*
+2.3) Implemente o membro-fun??o:
+bool CParqueEstac::novo_cliente(const string &nome)
+A fun??o retorna true caso consiga inserir o novo cliente, isto ?, o n?mero 
+m?ximo de clientes ainda n?o foi atingido e o cliente ainda n?o existe. 
+Este est? inicialmente fora do parque.
+*/
+bool CParqueEstac::novo_cliente(const string &nome)
+{
+     if (clientes.size()>=num_clientes || pos_cliente(nome)==-1) return false;
+     CInfoCartao newCli; newCli.nome = nome; newCli.presente = false;
+     clientes.push_back(newCli);
+     return true;
+}
+
+/*
+2.4) Implemente o membro-fun??o que retorna o ?ndice do cliente no vetor 
+de clientes. Retorna -1 caso o cliente n?o exista.
+int CParqueEstac::pos_cliente(const string &nome) const
+*/
+int CParqueEstac::pos_cliente(const string &nome) const
+{
+    for(int i=0; i< clientes.size(); i++)
+        if(clientes[i].nome == nome) return i;
+    return -1;
+}
+
+/*
+2.5) Implemente o membro-fun??o que regista a entrada de um cliente. A fun??o 
+retorna false se o cliente n?o puder entrar (porque n?o existem vagas, n?o 
+est? registado ou a sua viatura j? est? dentro do parque).
+bool CParqueEstac::entrar(const string &nome)
+*/
+
+bool CParqueEstac::entrar(const string &nome)
+{
+     int aux = pos_cliente(nome);
+     if(vagas==0 || aux==-1 || clientes[aux].presente) return false;
+     clientes[aux].presente = true;
+     return true;
+}
+
+/*
+2.6) Implemente o operador de compara??o. Considere que dois parques s?o 
+iguais se tiverem a mesma lota??o e o mesmo n?mero m?ximo de clientes. 
+bool CParqueEstac::operator==(const CParqueEstac &pe) const
+*/
+bool CParqueEstac::operator==(const CParqueEstac &pe) const
+{
+     return lotacao == pe.lotacao && num_clientes == pe.num_clientes;
+}
+
+
+/*
+GRUPO III (7 Valores)
+3) Pretende-se implementar uma classe para modelar o atendimento aos clientes 
+num banco. Existem duas filas, uma priorit?ria e outra normal, e os clientes 
+podem realizar dois tipos de opera??es: dep?sitos e levantamentos.
+*/
+class CCliente
+{
+    string operacao;
+    double montante;
+  public:
+    CCliente() {};
+    CCliente(string o="deposito", double m):operacao(o), montante(m) {}
+    friend class CBanco;
+};
+
+class CBanco
+{
+    queue<CCliente> filaPrioritaria;
+    queue<CCliente> filaNormal;
+    double valorEmCofre;
+  public:
+    CBanco(double valor=10000): valorEmCofre(valor) {}
+    void insereCli(CCliente cte, string fila);
+    bool clientesEmEspera();
+    CCliente proximoClienteServir();
+    double montanteMovimentado();
+    void juntarFilas();
+};
+
+/*
+3.1) Implemente o membro-fun??o que insere o cliente na fila indicada, que pode 
+tomar dois valores ("normal" ou "prioritaria"), para realizar uma opera??o, 
+que pode ser de "deposito" ou de "levantamento" de um dado montante. 
+Contudo um cliente que realiza um levantamento, independente do valor passado 
+? fun??o, dever? sempre ser colocado na fila "normal". As opera??es de "deposito" 
+incrementam o membro-dado valorEmCofre do banco, enquanto que nas opera??es de 
+"levantamento" o valorEmCofre sofre um decremento do valor da opera??o. 
+void CBanco::insereCli(CCliente cte, string fila)
+*/
+void CBanco::insereCli(CCliente cte, string fila)
+{
+     if(fila=="normal" || cte.operacao=="levantamento") filaNormal.push(cte);
+     else filaPrioritaria.push(cte);
+     if(cte.operacao=="levantamento") valorEmCofre-=cte.montante; 
+     else valorEmCofre+=cte.montante;  
+}
+/*
+3.2) Implemente o membro-fun??o que retorna verdadeiro se ainda existir algum cliente ? espera de ser atendido, em quaisquer filas.
+bool CBanco::clientesEmEspera()
+*/
+bool CBanco::clientesEmEspera()
+{
+     return !filaPrioritaria.empty() || !filaNormal.empty();
+}
+/*
+3.3) Implemente o membro-fun??o que  retorna o pr?ximo cliente a ser servido e remove-o da fila respetiva. Os primeiros clientes a serem servidos s?o os da filaPrioritaria, e s? a seguir s?o atendidos os clientes da filaNormal. Caso n?o existam clientes ? espera em qualquer das filas deve ser escrita no ?cran uma mensagem de erro.
+CCliente CBanco::proximoClienteServir()
+*/
+CCliente CBanco::proximoClienteServir()
+{
+    CCliente aux;
+    if(!filaPrioritaria.empty()) {
+        aux=filaPrioritaria.front();
+        filaPrioritaria.pop(); 
+        return aux;
+    }
+    if(!filaNormal.empty()) {
+        aux=filaNormal.front();
+        filaNormal.pop(); 
+        return aux;
+    }
+    cout << "N?o H? clientes 'a espera!" << endl;
+}
+/*
+3.4) Implemente um  membro-fun??o que escreve no ?cran e retorna a soma dos montantes a movimentar (dep?sitos e levantamentos) por todos os clientes que se encontram ? espera de ser servidos na filaPrioritaria e filaNormal:
+double CBanco::montanteMovimentado()
+*/
+double CBanco::montanteMovimentado()
+{
+    double val = 0;
+    queue <CCliente> fila(filaPrioritaria);
+    while(!fila.empty()) { 
+        val += fila.front().montante; fila.pop();
+    }   
+    queue <CCliente> fila2(filaPrioritaria);
+    while(!fila2.empty()) { 
+        val += fila2.front().montante; fila2.pop();
+    }  
+    cout << "Montante: " << val << endl; 
+    return val; 
+}
+
+/*
+3.5) No Banco, por vezes existe a necessidade de juntar ambas as filas 
+numa fila ?nica. Dependendo do n?mero de elementos em cada fila, o modo 
+como as filas s?o juntas ? distinto. No caso de existirem menos de 20 
+elementos no total das duas filas e menos de 5 na fila priorit?ria, 
+os elementos da fila priorit?ria s?o colocados ? cabe?a da nova fila 
+resultado e s? depois os elementos da fila normal. Em qualquer outro 
+caso, os elementos s?o colocados intercalados, i.e. primeiro um da 
+fila priorit?ria, depois um da fila normal, depois um da priorit?ria e 
+assim consecutivamente. Usando as funcionalidades das classes modelo 
+de STL, escreva, da forma o mais simples poss?vel (sem preocupa??es de 
+efici?ncia de c?digo) uma fun??o-membro que junte as duas filas 
+colocando o resultado na filaNormal.
+void CBanco::juntarFilas() 
+*/
+void CBanco::juntarFilas()
+{ 
+    queue <CCliente> fila;
+    if (filaPrioritaria.size()<5 && 
+        filaPrioritaria.size()+filaNormal.size()<20) {
+        fila = filaPrioritaria;
+        while(!filaNormal.empty()) {
+            fila.push(filaNormal.front()); filaNormal.pop();
+        }
+    }
+    else {
+         while(!(filaNormal.empty() && filaPrioritaria.empty())) {
+             if(!filaPrioritaria.empty()) {
+                 fila.push(filaPrioritaria.front()); filaPrioritaria.pop();
+             }
+             if(!filaNormal.empty()) {
+                 fila.push(filaNormal.front()); filaNormal.pop();
+             }
+         }
+    }
+    filaNormal = fila;
+}
+
+int main()
+{
+  
+  system("PAUSE");
+  return 0;    
+}

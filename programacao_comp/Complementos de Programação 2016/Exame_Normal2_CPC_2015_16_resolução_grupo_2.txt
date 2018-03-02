@@ -1,0 +1,260 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <stack>
+
+using namespace std;
+
+/*Uma ag?ncia de aluguer de viaturas pretende implementar um sistema de gest?o dos seus clientes e viaturas. 
+A classe CAgencia guarda informa??o sobre os seus clientes, frota de viaturas da ag?ncia e informa??o das 
+viaturas alugadas. A informa??o sobre um Cliente (classe CCliente) inclui o nome, a idade, viatura alugada e 
+data (ano) do ?ltimo aluguer, se existir. Cada cliente s? pode alugar uma viatura de cada vez. A informa??o 
+sobre uma Viatura (classe CViatura) inclui a marca, matr?cula e informa??o sobre exist?ncia de ar condicionado. 
+O membro-dado alugueres guarda informa??o sobre o n?mero de vezes que uma dada viatura j? foi alugada. 
+As classes CAgencia, CViatura e CCliente est?o parcialmente definidas a seguir. 
+Suponha que os m?todos indicados nas classes se encontram j? implementados. */
+class CViatura {
+   string marca;
+   string matricula;
+   bool ar_condicionado;
+   int alugueres;
+public:
+   CViatura(string mc, string mt, bool arc): 
+      marca(mc), matricula(mt), ar_condicionado(arc), alugueres(0) {}
+   string getMarca() const { return marca; }
+   string getMatricula() const { return matricula; }
+   int getAlugueres() const { return alugueres; }
+   void addAluguer() { alugueres++; }
+};
+class CCliente {
+   string nome;
+   unsigned int idade;
+   CViatura *viatura;
+   int anoUltAluguer;
+public:
+   CCliente(string no, unsigned int id); 
+   unsigned int getIdade() const {return idade; }
+   string getNome() const;
+   int getAnoUltAluguer() const {return anoUltAluguer; }
+   void setNome(string no);
+   bool setViatura(CViatura *v){ viatura = v; }
+   void setAnoUltAluguer(int ano){ anoUltAluguer = ano; }
+   CViatura *getViatura() const { return viatura; }
+	bool operator == (const CCliente &cli1) const;
+};
+class CAgencia {
+   vector<CViatura*> viaturas;
+   vector<CCliente> clientes;
+   vector<CViatura*> v_alugadas;
+public:
+   CAgencia() {}
+   ~CAgencia() {}
+   vector<CCliente> getClientes() const { return clientes; }
+   vector<CViatura*> getViaturas() const { return viaturas; }
+   vector<CViatura*> getViaturasAlugadas() const{ return v_alugadas; }
+   int numClientes() const { return clientes.size(); }
+   int numViaturas() const { return viaturas.size(); }
+   int numViaturasAlugadas() const{ return v_alugadas.size(); }
+   void novoCliente(string nomeCli, unsigned int idadeCli);
+   //Cliente* getClientePos(int p) { return &clientes[p]; }
+   void adicionaViatura(CViatura *vt) { viaturas.push_back(vt); }
+   void adicionaVAlugada(CViatura *vt) { v_alugadas.push_back(vt); }
+   int existeCliente(const string &nome) const;
+   bool adicionaCliente(string nomeCli, unsigned int idadeCli);
+   bool aluga(string nomeCli, string mt_viatura, int anoAtual);
+   int existeViatura(string &mat) const;
+   bool existeViaturaAlugada(CViatura *vt1) const;
+   void ordenaViaturas();
+   void clientesAntigos(int anoAl, const char nomFich[]);
+   void devolve(string nomeCli, string mt_viatura);
+};
+
+/*
+2.1) Defina e implemente na classe CCliente o construtor, o m?todo setNome e o m?todo getNome. 
+*/
+CCliente::CCliente(string no, unsigned int id): nome(no), idade(id) { viatura=NULL; anoUltAluguer=1900;}  //%2 pode ter inicializacao do ano e viatura tambem
+string CCliente::getNome() const { return nome; }     //%1.5
+void CCliente::setNome(string no) { nome = no; }   //%1.5
+
+/*
+2.2) Implemente na classe CAgencia o membro-fun??o:
+int existeCliente(string nomeCli) const
+O m?todo existeCliente retorna o ?ndice do cliente de nome nomeCli no vetor de clientes da ag?ncia. Se o cliente n?o existir, retorna -1. 
+*/
+int CAgencia::existeCliente(const string &nome) const
+{
+	for (unsigned int i=0; i < clientes.size(); i++)
+		if (clientes[i].getNome() == nome)	return i;
+	return -1;
+}
+
+/*
+2.3) Implemente na classe CAgencia o membro-fun??o:
+bool adicionaCliente(string nomeCli, unsigned int idadeCli); Esta fun??o adiciona o cliente de nome nomeCli 
+ao vetor clientes da ag?ncia. Se o cliente n?o tiver idade igual ou superior a 18 anos ou se cliente j? 
+existir, deve retornar falso sem adicionar o cliente e imprimir no ?cran qual o erro correspondente 
+"Menor de Idade!" ou "J? Existente!".
+*/
+bool CAgencia::adicionaCliente(string nomeCli, unsigned int idadeCli)
+{
+	if (idadeCli<18) {	cout << "Menor de Idade!" << endl; return false; }   //%1
+	if (existeCliente(nomeCli) != -1) {	cout << "J? Existente!" << endl; return false; }  //%1
+	CCliente cli(nomeCli, idadeCli);   //%1.5
+	clientes.push_back(cli);    //%1.5
+	return true;
+}
+
+/*
+2.4) Implemente na classe CAgencia os m?todos seguintes:
+int existeViatura(string &mat) const
+bool existeViaturaAlugada(Viatura *vt1) const
+O M?todo existeViatura deve retornar a posi??o da viatura com matricula mat no vetor de viaturas 
+(ou -1 caso n?o exista). O m?todo existeViaturaAlugada, dado um apontador para uma viatura deve 
+retornar verdadeiro/falso dependendo se essa viatura est? alugada (isto ? consta do vetor de 
+viaturas alugadas).
+*/
+int CAgencia::existeViatura(string &mat) const
+{
+	for (unsigned int i=0; i < viaturas.size(); i++)  //%1
+		if (viaturas[i]->getMatricula() == mat)	return i;  //%1
+	return -1;  //%0.5
+}
+bool CAgencia::existeViaturaAlugada(CViatura *vt1) const
+{
+	for (unsigned int i=0; i < v_alugadas.size(); i++)   //%1
+		if (v_alugadas[i]->getMatricula() == vt1->getMatricula()) return true;  //%1
+	return false;  //%0.5
+}
+
+/*
+2.5)  Implemente na classe CAgencia o membro-fun??o:
+void aluga(string nomeCli, string mt_viatura, int anoAtual); Esta fun??o realiza o aluguer da 
+viatura com matr?cula mt_viatura pelo cliente de nome nomeCli na data anoAtual. O vetor 
+v_alugadas mant?m as viaturas que est?o atualmente alugadas (note que o vetor viaturas inclui 
+todas as viaturas da ag?ncia, alugadas ou n?o). Esta opera??o implica ainda a atualiza??o do 
+vetor v_alugadas e o incremento do membro-dado alugueres. No caso da viatura com matr?cula 
+mt_viatura j? estar alugada ou n?o existir, a fun??o deve retornar falso. 
+*/
+bool CAgencia::aluga(string nomeCli, string mt_viatura, int anoAtual)
+{
+	int posCli = existeCliente(nomeCli);
+	if (posCli != -1) { // se cliente existir   //%1
+		CViatura *valugada = clientes[posCli].getViatura();
+		if (valugada == NULL){   //e n?o tiver viatura alugada  //%1
+			int posV = existeViatura(mt_viatura);  // procura a viatura com dada matricula
+			if (posV == -1) return false;   //%1
+			else {
+				CViatura *vt = viaturas[posV];
+				if (existeViaturaAlugada(vt)) return false; //%1
+				else {
+					v_alugadas.push_back(vt);    //%1.5
+					clientes[posCli].setAnoUltAluguer(anoAtual);
+					clientes[posCli].setViatura(vt);
+					(*vt).addAluguer();
+				}
+			}
+		}
+	}
+}
+
+/*
+2.6) Implemente na classe Agencia o membro-fun??o: void ordenaViaturas() que ordena o 
+vetor viaturas por ordem decrescente de n?mero de alugueres de cada viatura. 
+Viaturas com o mesmo n?mero de alugueres s?o ordenadas por ordem alfab?tica (decrescente) 
+de matr?cula. Na ordena??o use o m?todo de ordena??o por sele??o estudado nas aulas.
+*/
+void CAgencia::ordenaViaturas()
+{
+	int i, j, max;
+ 	for (i=0; i<viaturas.size()-1; i++) {  //%1
+   		max = i;
+   		for (j=i+1; j<viaturas.size(); j++) {  //%1
+     		if (viaturas[j]->getAlugueres() > viaturas[max]->getAlugueres() ||  //%2
+		    	viaturas[j]->getAlugueres() == viaturas[max]->getAlugueres() &&
+		    	viaturas[j]->getMatricula() > viaturas[max]->getMatricula()) max = j;
+   		} 
+   		CViatura *aux = viaturas[i]; viaturas[i] = viaturas[max]; viaturas[max] = aux; //troca max e i  //%1
+ 	}
+}
+
+/*
+2.7) Implemente na classe CAgencia o membro-fun??o: 
+void clientesAntigos(int anoAl, string nomFich) que grava no ficheiro nomFich, a 
+informa??o de todos os clientes cujo ?ltimo aluguer (membro-dado anoUltAluguer) seja 
+anterior ao ano anoAl. 
+*/
+
+void CAgencia::clientesAntigos(int anoAl, const char nomFich[])
+{
+	ofstream fich(nomFich);  //%1
+	for(int i=0; i<clientes.size(); i++) {  //%1
+	    if (clientes[i].getAnoUltAluguer() < anoAl) {   //%1
+	    	fich << clientes[i].getNome() << " " << clientes[i].getIdade() << " " <<  //%2
+	    	        clientes[i].getAnoUltAluguer() << endl;
+	    }
+	}
+}
+
+/* 2.8) Implemente na classe CAgencia o membro-fun??o:
+bool devolve(string nomeCli, string mt_viat)
+A fun??o devolve ? ag?ncia de aluguer a viatura com matr?cula mt_viat que estava alugada 
+pelo cliente nomeCli. Aquando da devolu??o da viatura, esta deve ser removida do cliente 
+e do vetor de viaturas alugadas. Se o cliente nomeCli n?o alugou a viatura de matr?cula 
+mt_viatura, a fun??o retorna falso. */
+void CAgencia::devolve(string nomeCli, string mt_viatura)
+{
+	int posCli = existeCliente(nomeCli);   
+	if (posCli != -1) { // se cliente existir  //%1
+		if (clientes[posCli].getViatura()->getMatricula() == mt_viatura) {  //%1
+			for(vector<CViatura *>::iterator it=v_alugadas.begin(); it!=v_alugadas.end(); it++) {  //%1
+				if((*it)->getMatricula() == mt_viatura) { // encontrou  //%1
+					clientes[posCli].setViatura(0);
+					v_alugadas.erase(it);  //%1
+					return;
+				}
+			}
+		}
+	}
+}
+
+/*
+2.9) Implemente uma fun??o main() que lhe permita testar adequadamente as 8 al?neas anteriores.
+*/
+int main() {
+ 	CAgencia ag;    //%0.5
+	ag.adicionaCliente("Joao Rocha", 24);
+	ag.adicionaCliente("Pedro Reis", 20);
+	ag.adicionaCliente("bebe", 2);           //%0.5
+	ag.adicionaCliente("Pedro Reis", 20);
+	ag.adicionaCliente("Maria Silva", 50);    
+	cout << ag.existeCliente("Maria Silva") << endl;   
+    cout << ag.existeCliente("XPTO") << endl;
+    cout << "Num Clientes: " << ag.numClientes() << endl;   //%0.5
+     
+	CViatura *vt1 = new CViatura("Honda", "LE0502", false);   //%0.5
+	CViatura *vt2 = new CViatura("Opel", "AB7835", true);
+	CViatura *vt3 = new CViatura("Renault", "UX4312", false);
+	CViatura *vt4 = new CViatura("BMW", "JJ0000", true);
+	ag.adicionaViatura(vt1);    //%0.5
+	ag.adicionaViatura(vt2);
+	ag.adicionaViatura(vt3);
+	ag.adicionaViatura(vt4);
+	string st1("JJ0000"), st2("XPTO");
+	cout << ag.existeViatura(st1) << " " << ag.existeViatura(st2) << endl;  //%0.5
+	ag.aluga("Joao Rocha", "LE0502", 2008);  //aluga 1
+	ag.aluga("Pedro Reis", "JJ0000", 2008);  //aluga 2  
+	ag.aluga("Maria Silva", "JJ0000", 2008);  //viatura ja' alugada  //%0.5
+	ag.aluga("Pedro Reis", "AB7835", 2008);   //cliente ja' tem outra viatura alugada
+	cout << ag.existeViaturaAlugada(vt1) << " " << ag.existeViaturaAlugada(vt2) << endl;
+	cout << "Num Viaturas Alugadas: " << ag.numViaturasAlugadas() << endl;  //2 viaturas  //%0.5
+ 	for (int i=0; i<ag.getViaturas().size(); i++)   //%0.5
+	 	cout << ag.getViaturas()[i]->getMatricula() << " " << ag.getViaturas()[i]->getAlugueres() << endl; 	
+	ag.ordenaViaturas();   //%0.5
+ 	for (int i=0; i<ag.getViaturas().size(); i++) 
+	 	cout << ag.getViaturas()[i]->getMatricula() << " " << ag.getViaturas()[i]->getAlugueres() << endl; 
+	ag.clientesAntigos(2005,"Clientes.txt");  //ver ficheiro  //%0.5
+	ag.devolve("Pedro Reis", "JJ0000");    //%0.5
+	cout << "Num Viaturas Alugadas: " << ag.numViaturasAlugadas() << endl;  //2 viaturas
+    return 0;
+}

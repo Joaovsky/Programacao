@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#define N 5
+#define N 1
 
 typedef struct INFO_ALUNO {
  int numero;
@@ -41,10 +41,10 @@ void ordenar(info_aluno *al, int n)
 
 int pesquisar(info_aluno *al, int n, char *nome)
 {
-	int i, enc=0;
+	int i=0, enc=0;
 	while (i<n && !enc)
 	{
-			if (stricmp(al[i].nome, nome))
+			if (!stricmp(al[i].nome, nome))
 				{
 					enc=1; 		//compara as strings e nao facas sistincao entre maiusculas e minusculas stricmp, se quiseres q faca dif usa strcmp
 				}
@@ -83,14 +83,10 @@ for(i=0;i<N;i++)
 	fflush(stdin);
 }
 num=pesquisar(aluno, N,"ANA");
-if(num==1)
-{
+if(num==-1)
 	printf("Nao existe\n");
-}
 else
-{
 	printf("Aluno numero %d\n", num);
-}
 
 ordenar(aluno, N);
 listar(aluno, N);

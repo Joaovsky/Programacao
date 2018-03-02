@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
-#include "graphics.h"
+//#include "graphics.h"
 
 const int N=4;
 

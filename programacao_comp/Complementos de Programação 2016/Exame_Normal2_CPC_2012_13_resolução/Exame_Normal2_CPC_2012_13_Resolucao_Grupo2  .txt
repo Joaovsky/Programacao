@@ -1,0 +1,131 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class CLeitor {
+	string nome;
+	int codigo;
+	public:
+	  CLeitor(string, int);
+	  virtual double getMensalidade() = 0;
+};
+
+class CLivro {
+	string titulo, autor;
+	string ISBN;
+	int numExemplares;
+   public:
+   	CLivro operator+ (CLivro livro1);
+   	CLivro(string ti, string au, string is, int ne): titulo(ti), autor(au), ISBN(is), numExemplares(ne){}
+	string getTitulo() {return titulo;}
+	string getISBN() {return ISBN;}
+	int getNumExemp() {return numExemplares;}
+};
+
+class CBiblioteca {
+	vector <CLeitor*> leitores;
+	vector <CLivro> livros;
+   public:
+	CBiblioteca();
+	void adicionaLeitor(CLeitor &l1);
+	void adicionaLivro(CLivro &l1);
+	CLivro &getLivro(string &tituloL);
+	double getMensalidade();
+};
+
+/* 2.1) Construa a classe Leitor, que cont?m os atributos privados nome (string) e codigo (inteiro). 
+Os leitores devem ter um c?digo ?nico e sequencial. */
+
+class CLeitor {
+	string nome; int codigo;
+	public:
+	  CLeitor(string, int);
+	  virtual double getMensalidade() = 0;
+};
+
+/* 2.2) Implemente o respectivo m?todo construtor e o m?todo abstracto double getMensalidade. */
+
+CLeitor::CLeitor(string n, int c): nome(n), codigo(c){}	  	  
+double CLeitor::getMensalidade(){}
+
+/* 2.3) Na classe CBiblioteca, implemente o m?todo CLivro& getLivro(string &tituloL), que retorna o livro 
+cujo t?tulo ? tituloL.  */
+
+CLivro& CBiblioteca::getLivro(string &tituloL)
+{
+	for(int i=0; i<livros.size(); i++){
+		if(tituloL==livros[i].getTitulo()) return livros[i];
+	}	
+}
+
+/* 2.4) Na classe CLivro, implemente o operador +. A soma de dois livros s? pode ser realizada se os livros forem 
+iguais (tiverem o mesmo ISBN). Nesse caso, a soma ? um outro livro com o titulo, autor e ISBN do primeiro, e 
+n?mero de exemplares igual ? soma do n?mero de exemplares dos dois livros. */
+
+CLivro CLivro::operator+ (CLivro livro1)
+{
+	if (livro1.getISBN() != getISBN()) { cerr << "Impossivel Somar! "; return *this; }
+	CLivro novo(titulo, autor, ISBN, this->getNumExemp()+livro1.getNumExemp());
+	return novo;
+}
+
+/* 2.5) Suponha que os leitores podem ser de dois tipos: s?cios e n?o s?cios. Construa a subclasse LeitorSocio. 
+Os leitores s?cios pagam uma determinada mensalidade ? biblioteca, e podem requisitar um n?mero ilimitado de livros. 
+O valor da mensalidade ? um argumento do construtor. Implemente o m?todo construtor e o m?todo getMensalidade(). */ 
+
+class CLeitorSocio: public CLeitor
+{
+	double mensalidade;
+   public:
+	CLeitorSocio(string n, int c, double me): mensalidade(me), CLeitor(n,c) { }	
+	double getMensalidade() { return mensalidade;}
+};
+
+/* 2.6) Construa a subclasse LeitorNaoSocio. Os leitores n?o s?cios possuem um n?mero limite de livros que podem 
+requisitar (argumento do construtor). Esta classe possui tamb?m o atributo livrosReq que indica o n?mero de livros 
+que requisitou nesse m?s, e o atributo taxa (taxa de empr?stimo que ? um argumento do construtor). 
+A mensalidade a pagar ? igual a  livrosReq*taxa. Implemente o m?todo construtor e o m?todo getMensalidade(). */
+class CLeitorNaoSocio: public CLeitor
+{
+	const int numLimite;
+	int livrosReq;
+	double taxa;
+   public:
+	CLeitorNaoSocio(string n, int c, int nl, double t): numLimite(nl), taxa(t), CLeitor(n,c) { }
+	double getMensalidade() { return taxa*livrosReq;}
+};
+
+/* 2.7) Na classe CBiblioteca, implemente o m?todo getMensalidade(), que retorna o valor da mensalidade paga por 
+todos os leitores da biblioteca. */ 
+double CBiblioteca::getMensalidade()
+{
+	double total=0.0;
+	for(int i=0; i<leitores.size(); i++)
+		total += leitores[i]->getMensalidade();
+	return total;
+}
+
+/* 2.8) Considere que pretendia realizar a opera??o de requisi??o de um livro por parte de um leitor.
+ Especifique quais as estruturas de dados que usaria, alterando/adicionando os atributos das 
+ classes que entender.  Explique como realizaria a opera??o de requisi??o de um livro. 
+ N?o precisa apresentar c?digo. */
+
+/*
+ bool requisita(string tituloL, int codigo)
+ fun??o requisita
+ procura livro, verifica se existe e se h? exemplares >0
+ procura socio verifica e chama fun??o requisita livro do leitor
+ se ? socio n?o faz nada
+ se n?o ? socio verifica se livrosreq < num limite e incrementa livros req
+ decrementa num exemplares
+*/
+
+/* 2.9) Suponha que deseja copiar a informa??o completa relativa a todos os livros da biblioteca para uma fila de modo a serem 
+posteriormente processados. Apresente a declara??o de tal fila e o c?digo que lhe permite efectuar a referida c?pia. */
+
+int main()
+{
+	return 0;
+}
